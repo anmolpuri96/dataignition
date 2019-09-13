@@ -72,7 +72,7 @@ if __name__ == "__main__":
          print('Loading to bucket ' + xml_file_name_votes)
          ds3.meta.client.upload_file(xml_file_name_votes, destination_bucket_name, xml_file_name_votes)
          print('Loading to bucket ' + xml_file_name_badges)
-        ds3.meta.client.upload_file(xml_file_name_badges, destination_bucket_name, xml_file_name_badges)
+         ds3.meta.client.upload_file(xml_file_name_badges, destination_bucket_name, xml_file_name_badges)
          print('Loading to bucket ' + xml_file_name_phist)
          ds3.meta.client.upload_file(xml_file_name_phist, destination_bucket_name, xml_file_name_phist)
          print('Loading to bucket ' + xml_file_name_comments)
