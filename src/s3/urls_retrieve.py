@@ -3,7 +3,7 @@ import requests
 from multiprocessing import Pool
 import csv
 import time
-""" This script uses BeautifulSoup to parse the urls to the stackexchange file and store them in a text file
+""" This script uses BeautifulSoup to parse the urls to the stackexchange file and store them in a text file """
 
 if __name__ == '__main__':
  url = 'https://archive.org/download/stackexchange'
