@@ -8,7 +8,7 @@ import time
 if __name__ == '__main__':
  url = 'https://archive.org/download/stackexchange'
  response = requests.get(url)
- page_content = BeautifulSoup(response.text)
+ page_content = BeautifulSoup(response.text, "lxml")
  tabledatas = page_content.find_all("td")[1:]
  urls_list = []
  for tabledata in tabledatas:
