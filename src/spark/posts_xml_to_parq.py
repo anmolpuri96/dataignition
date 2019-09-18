@@ -69,7 +69,7 @@ def main():
 
     community_posts = posts_udf_id.join(clean_name_df_subset_id, posts_udf_id.iid == clean_name_df_subset_id.iid).drop(
         "iid")
-    community_posts.write.parquet("s3a://xmlparq/posts.parquet")
+    community_posts.write.parquet("s3a://dataignition-tech-xml-parq/posts.parquet")
     spark.catalog.clearCache()
 
 
