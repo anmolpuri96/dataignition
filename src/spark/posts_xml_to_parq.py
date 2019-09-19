@@ -60,19 +60,18 @@ def main():
                 col('value.ClosedDate').cast('timestamp'),
                 col('value.LastEditorDisplayName'),
                 col('value.CommunityOwnedDate').cast('timestamp')
-                )
+                ).limit(100)
     # file_name_df = spark.read.text(xml_files).where(col('value').like('%<row Id%')).select(input_file_name())
     # community_name_df = file_name_df.withColumn('Community',
     #                                             regexp_extract(col('input_file_name()'), './(posts)([\w\.]+).xml', 2))
     # clean_name_df_subset = community_name_df.select("Community")
 
-    posts_udf_id = posts_udf.withColumn("iid", monotonically_increasing_id())
-    posts_udf_id.limit(100)
+    # posts_udf_id = posts_udf.withColumn("iid", monotonically_increasing_id())
     # clean_name_df_subset_id = clean_name_df_subset.withColumn("iid", monotonically_increasing_id())
     #
     # community_posts = posts_udf_id.join(clean_name_df_subset_id, posts_udf_id.iid == clean_name_df_subset_id.iid).drop(
     #     "iid")
-    posts_udf_id.write.parquet("s3a://dataignition-tech-xml-parq/posts.parquet")
+    posts_udf.write.parquet("s3a://dataignition-tech-xml-parq/posts-new.parquet")
     spark.catalog.clearCache()
 
 

@@ -17,7 +17,7 @@ def main():
   #read in the links parquet file
   # links = spark.read.load("s3a://dataignition-tech-xml-parq/pr_se_links.parquet")
   #read in the posts parquet file
-  posts = spark.read.parquet("s3a://dataignition-tech-xml-parq/posts.parquet")
+  posts = spark.read.parquet("s3a://dataignition-tech-xml-parq/posts.parquet/_temporary")
   #filter the questions:
   questions = posts.filter((f.col('PostTypeId')==1)).filter((f.col('AcceptedAnswerId').isNotNull()))
   questions_subset = questions.select('Id','AcceptedAnswerId','Tags','CreationDate', 'Community')
