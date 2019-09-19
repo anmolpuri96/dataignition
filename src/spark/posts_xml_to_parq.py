@@ -15,6 +15,8 @@ def read_tags_raw(tags_string):  # converts <tag1><tag2> to ['tag1', 'tag2']
 
 
 def main():
+    print("printing spark conf")
+    print(SparkConf())
     sc = SparkContext(conf=SparkConf().setAppName("se"))
     spark = SparkSession.builder.appName("se").getOrCreate()
     pattern = re.compile(' ([A-Za-z]+)="([^"]*)"')
