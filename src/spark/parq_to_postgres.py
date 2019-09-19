@@ -46,7 +46,7 @@ def main():
   all_questions = all_questions.withColumn('post_create_date',all_questions['CreationDate'].cast('date'))
   all_questions = all_questions.withColumnRenamed('id','COMMUNITY_QUESTION_ID')
   all_questions_subset = all_questions.select('COMMUNITY_QUESTION_ID','Community','Tags', 'post_create_date')
-  questions_subset.show()
+  all_questions_subset.show()
 
   # links  = links.withColumnRenamed("community","lcommunity")
   # """ perform a join based on community and the question id to combine the pagerank score and
