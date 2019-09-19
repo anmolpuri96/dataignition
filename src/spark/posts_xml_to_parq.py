@@ -67,11 +67,12 @@ def main():
     # clean_name_df_subset = community_name_df.select("Community")
 
     posts_udf_id = posts_udf.withColumn("iid", monotonically_increasing_id())
+    posts_udf_id.limit(100)
     # clean_name_df_subset_id = clean_name_df_subset.withColumn("iid", monotonically_increasing_id())
     #
     # community_posts = posts_udf_id.join(clean_name_df_subset_id, posts_udf_id.iid == clean_name_df_subset_id.iid).drop(
     #     "iid")
-    posts_udf.write.parquet("s3a://dataignition-tech-xml-parq/posts.parquet")
+    posts_udf_id.write.parquet("s3a://dataignition-tech-xml-parq/posts.parquet")
     spark.catalog.clearCache()
 
 
