@@ -20,33 +20,34 @@ def main():
   posts = spark.read.parquet("s3a://dataignition-tech-xml-parq/posts-new.parquet")
   #filter the questions:
   questions = posts.filter((f.col('PostTypeId')==1)).filter((f.col('AcceptedAnswerId').isNotNull()))
-  questions_subset = questions.select('Id','AcceptedAnswerId','Tags','CreationDate', 'Community')
-  #filter the answers in another dataframe
-  answers = df3.filter((f.col('PostTypeId')==2))
-  #rename the answer dataframe columns
-  answers_subset = answers.select("Id","CreationDate","Community")
-  new_names = ['AnsId', 'AnsCreationDate','AnsCommunity']
-  answers_subset = answers_subset.toDF(*new_names)
-  #perform a join on the questions df and the answer df based on the common answer id
-  qa_deets = questions_subset.join(answers_subset,(answers_subset.AnsCommunity == all_questions.Community) & (questions_subset.AcceptedAnswerId == answers_subset.AnsId))
-
-  timeFmt = "yyyy-MM-dd' 'HH:mm:ss.SSS"
-  timeDiff = (f.unix_timestamp('AnsCreationDate', format=timeFmt)
-            - f.unix_timestamp('CreationDate', format=timeFmt))
-  #divide duration by seconds to convert it to milli- minutes
-  qa_deets = qa_deets.withColumn("Duration", timeDiff/60)
-
-  qa_deets_subset = qa_deets.select("Id",  "Tags","CreationDate","Community", "Duration")
-  #filter off questions which have no answers
-  questions_null = df3.filter((f.col('PostTypeId')==1)).filter((f.col('AcceptedAnswerId').isNull()))
-  questions_null_subset = questions_null.select('Id','Tags','CreationDate','Community')
-  questions_null_duration = questions_null_subset.withColumn('Duration', lit(None).cast(DoubleType()))
-  #combine all questions; questions with answers and question with no answers
-  all_questions = qa_deets_subset.union(questions_null_duration)
-  all_questions = all_questions.withColumn('post_create_date',all_questions['CreationDate'].cast('date'))
-  all_questions = all_questions.withColumnRenamed('id','COMMUNITY_QUESTION_ID')
-  all_questions_subset = all_questions.select('COMMUNITY_QUESTION_ID','Community','Tags', 'post_create_date')
-  all_questions_subset.show()
+  questions.show()
+  # questions_subset = questions.select('Id','AcceptedAnswerId','Tags','CreationDate', 'Community')
+  # #filter the answers in another dataframe
+  # answers = df3.filter((f.col('PostTypeId')==2))
+  # #rename the answer dataframe columns
+  # answers_subset = answers.select("Id","CreationDate","Community")
+  # new_names = ['AnsId', 'AnsCreationDate','AnsCommunity']
+  # answers_subset = answers_subset.toDF(*new_names)
+  # #perform a join on the questions df and the answer df based on the common answer id
+  # qa_deets = questions_subset.join(answers_subset,(answers_subset.AnsCommunity == all_questions.Community) & (questions_subset.AcceptedAnswerId == answers_subset.AnsId))
+  #
+  # timeFmt = "yyyy-MM-dd' 'HH:mm:ss.SSS"
+  # timeDiff = (f.unix_timestamp('AnsCreationDate', format=timeFmt)
+  #           - f.unix_timestamp('CreationDate', format=timeFmt))
+  # #divide duration by seconds to convert it to milli- minutes
+  # qa_deets = qa_deets.withColumn("Duration", timeDiff/60)
+  #
+  # qa_deets_subset = qa_deets.select("Id",  "Tags","CreationDate","Community", "Duration")
+  # #filter off questions which have no answers
+  # questions_null = df3.filter((f.col('PostTypeId')==1)).filter((f.col('AcceptedAnswerId').isNull()))
+  # questions_null_subset = questions_null.select('Id','Tags','CreationDate','Community')
+  # questions_null_duration = questions_null_subset.withColumn('Duration', lit(None).cast(DoubleType()))
+  # #combine all questions; questions with answers and question with no answers
+  # all_questions = qa_deets_subset.union(questions_null_duration)
+  # all_questions = all_questions.withColumn('post_create_date',all_questions['CreationDate'].cast('date'))
+  # all_questions = all_questions.withColumnRenamed('id','COMMUNITY_QUESTION_ID')
+  # all_questions_subset = all_questions.select('COMMUNITY_QUESTION_ID','Community','Tags', 'post_create_date')
+  # all_questions_subset.show()
 
   # links  = links.withColumnRenamed("community","lcommunity")
   # """ perform a join based on community and the question id to combine the pagerank score and
