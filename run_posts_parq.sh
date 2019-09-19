@@ -2,6 +2,5 @@
 
 export PYSPARK_PYTHON=python3;
 spark-submit \
-  --master spark://10.0.0.7:7077 \
-  /home/ubuntu/dataignition-tech/src/spark/posts_xml_to_parq.py \
-  1000
+  --master spark://ec2-3-228-180-18.compute-1.amazonaws.com:7077 \
+  /home/ubuntu/dataignition-tech/src/spark/posts_xml_to_parq.py
