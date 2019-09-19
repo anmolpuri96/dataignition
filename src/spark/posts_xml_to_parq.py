@@ -60,7 +60,7 @@ def main():
                 col('value.ClosedDate').cast('timestamp'),
                 col('value.LastEditorDisplayName'),
                 col('value.CommunityOwnedDate').cast('timestamp')
-                )
+                ).limit(100000)
     # file_name_df = spark.read.text(xml_files).where(col('value').like('%<row Id%')).select(input_file_name())
     # community_name_df = file_name_df.withColumn('Community',
     #                                             regexp_extract(col('input_file_name()'), './(posts)([\w\.]+).xml', 2))
