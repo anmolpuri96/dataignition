@@ -59,7 +59,7 @@ def preprocess_files(bucket_name, file_name):
     raw_data = sql_context.read.parquet("s3a://{0}/{1}".format(bucket_name, file_name))
     raw_data.show()
 
-    answers = raw_data.filter((f.col('PostTypeId')==2))
+    answers = raw_data.filter(raw_data.PostTypeId==2)
     answers.show()
 
 #     # Clean article text
