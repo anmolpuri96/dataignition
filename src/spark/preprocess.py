@@ -59,7 +59,7 @@ def preprocess_files(bucket_name, file_name):
     raw_data = sql_context.read.parquet("s3a://{0}/{1}".format(bucket_name, file_name))
     raw_data.show()
 
-    unanswered_questions = raw_data.filter(raw_data.PostTypeId==1).filter(raw_data.AcceptedAnswerId is None)
+    unanswered_questions = raw_data.filter(raw_data.PostTypeId==1).filter(raw_data.AcceptedAnswerId.isNull())
     unanswered_questions.show()
 
 #     # Clean article text
