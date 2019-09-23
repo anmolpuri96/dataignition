@@ -59,6 +59,9 @@ def preprocess_files(bucket_name, file_name):
     raw_data = sql_context.read.parquet("s3a://{0}/{1}".format(bucket_name, file_name))
     raw_data.show()
 
+    answers = raw_data.filter((f.col('PostTypeId')==2))
+    answers.show()
+
 #     # Clean article text
 #     print(colored("[PROCESSING]: Cleaning post body", "green"))
 #     clean_body = F.udf(lambda body: filter_body(body), StringType())
