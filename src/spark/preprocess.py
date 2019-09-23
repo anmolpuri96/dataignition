@@ -88,7 +88,7 @@ def preprocess_files(bucket_name, file_name):
     cat_id_map = raw_data.select(F.explode('Tags').alias('category'), 'id').groupBy(F.col('category')).agg(F.collect_list('Id').alias('ids_list')).where(F.size(F.col('ids_list')) < 200).withColumn('ids', to_str_udf('ids_list'))
     print(colored("Beginning writing category/id mapping to Redis", "green"))
     def write_cat_id_map_to_redis(rdd):
-        rdb = redis.StrictRedis(ec2-52-73-233-196.compute-1.amazonaws.com, port=6379, db=0)
+        rdb = redis.StrictRedis("ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
         for row in rdd:
             rdb.sadd('cat:{}'.format(row.category), row.ids)
     cat_id_map.foreachPartition(write_cat_id_map_to_redis)
@@ -125,7 +125,7 @@ def preprocess_files(bucket_name, file_name):
     # Write minhash data to redis. If pipeline=True, use pipeline
     # method of inserting data in Redis
     def write_minhash_data_to_redis(rdd):
-        rdb = redis.StrictRedis(ec2-52-73-233-196.compute-1.amazonaws.com, port=6379, db=0)
+        rdb = redis.StrictRedis("ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
         for row in rdd:
             rdb.sadd('id:{}'.format(row.id), row.min_hash)
     #print(minhash_df.show(5, True))
@@ -144,7 +144,7 @@ def main():
     global sc
     #sc = SparkContext(conf=spark_conf)
     sc_conf = SparkConf()
-    sc_conf.set("spark.redis.host", ec2-52-73-233-196.compute-1.amazonaws.com)
+    sc_conf.set("spark.redis.host", "ec2-52-73-233-196.compute-1.amazonaws.com")
     sc_conf.set("spark.redis.port", "6379")
     sc = SparkContext(conf=sc_conf)
     sc.setLogLevel("ERROR")
