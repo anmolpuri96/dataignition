@@ -100,7 +100,7 @@ def preprocess_files(bucket_name, file_name):
     def write_cat_id_map_to_redis(rdd):
         rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
         for row in rdd:
-            rdb.sadd('cat:{}'.format(row.category), row.ids)
+            rdb.sadd('cat:{}'.format(row.Tag), row.Ids)
     cat_id_map.foreachPartition(write_cat_id_map_to_redis)
     print(cat_id_map.show(5,True))
     print(colored("Finished writing category/id mapping to Redis", "green"))
