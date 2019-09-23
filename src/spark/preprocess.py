@@ -22,7 +22,7 @@ from pyspark.context import SparkContext
 from pyspark.sql import SQLContext
 
 import nltk
-nltk.download("wordnet")
+nltk.download("wordnet", "/home/ubuntu/nltk_data")
 from nltk.stem import WordNetLemmatizer
 
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config")
