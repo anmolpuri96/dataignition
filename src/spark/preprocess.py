@@ -25,10 +25,10 @@ import nltk
 nltk.download("wordnet")
 from nltk.stem import WordNetLemmatizer
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config")
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/lib")
-import config
-import util
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config")
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/lib")
+# import config
+# import util
 
 '''Master preprocessing script + General preprocessing functions'''
 
@@ -135,8 +135,8 @@ def preprocess_files(bucket_name, file_name):
 
     print(colored("[UPLOAD]: Writing preprocessed data to database...", "green"))
 #    write_aws_s3(config.S3_BUCKET, config.S3_FOLDER_PREPROCESSED, shingled_data)
-    cf = configparser.ConfigParser()
-    cf.read('../config/db_properties.ini')
+    # cf = configparser.ConfigParser()
+    # cf.read('../config/db_properties.ini')
 
 def main():
     #spark_conf = SparkConf().setAppName("Text Preprocesser").set("spark.cores.max", "30")
@@ -148,8 +148,8 @@ def main():
     sc_conf.set("spark.redis.port", "6379")
     sc = SparkContext(conf=sc_conf)
     sc.setLogLevel("ERROR")
-    sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/lib/util.py")
-    sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config/config.py")
+    # sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/lib/util.py")
+    # sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config/config.py")
 
     global sql_context
     sql_context = SQLContext(sc)
