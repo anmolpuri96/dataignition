@@ -75,6 +75,8 @@ def preprocess_files(bucket_name, file_name):
     print(colored("[PROCESSING]: Removing stop words", "green"))
     stop_words_remover = StopWordsRemover(inputCol="text_body_tokenized", outputCol="text_body_stop_words_removed")
     stop_words_removed_data = stop_words_remover.transform(tokenized_data)
+    print("stop_words_removed_data")
+    stop_words_removed_data.show()
 
     # Stem words
     print(colored("Stemming tokenized text", "green"))
