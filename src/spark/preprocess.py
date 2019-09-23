@@ -57,6 +57,7 @@ to_str_udf = F.udf(to_str, StringType())
 def preprocess_files(bucket_name, file_name):
 
     raw_data = sql_context.read.parquet("s3a://{0}/{1}".format(bucket_name, file_name))
+    raw_data.show()
 
     # Clean article text
     print(colored("[PROCESSING]: Cleaning article text", "green"))
