@@ -1,5 +1,4 @@
 redis
 mmh3
 numpy
-pickle
 nltk
