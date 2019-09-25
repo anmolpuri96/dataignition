@@ -137,12 +137,8 @@ def preprocess_files(bucket_name, file_name):
     def write_minhash_data_to_redis(rdd):
         rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
         for row in rdd:
-            # rdb.sadd('id:{}'.format(row.id), row.min_hash)
-            f = open('id_minhash.txt', 'w')
-            f.write("SET id:{0} {1}\n".format(row.id, row.min_hash))
-            # print('id:{}'.format(row.id), row.min_hash)
-        f.close()
-    print(minhash_df.show(5, True))
+            rdb.sadd('id:{}'.format(row.id), row.min_hash)
+    #print(minhash_df.show(5, True))
     minhash_df.foreachPartition(write_minhash_data_to_redis)
 
     print(colored("Finished writing minhash data to Redis", "green"))
@@ -170,7 +166,7 @@ def main():
     sql_context = SQLContext(sc)
 
     start_time = time.time()
-    preprocess_files("dataignition-tech-xml-parq", "posts-new.parquet")
+    preprocess_files("dataignition-tech-xml-parq", "posts.parquet")
     end_time = time.time()
     print(colored("Preprocessing run time (seconds): {0}".format(end_time - start_time), "magenta"))
     #redis connect
