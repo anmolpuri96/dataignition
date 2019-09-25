@@ -69,21 +69,21 @@ def preprocess_files(bucket_name, file_name):
     tokenizer = Tokenizer(inputCol="cleaned_body", outputCol="text_body_tokenized")
     tokenized_data = tokenizer.transform(clean_article_data)
     print("tokenized_data")
-    tokenized_data.show()
+    # tokenized_data.show()
 
     # Remove stop words
     print(colored("[PROCESSING]: Removing stop words", "green"))
     stop_words_remover = StopWordsRemover(inputCol="text_body_tokenized", outputCol="text_body_stop_words_removed")
     stop_words_removed_data = stop_words_remover.transform(tokenized_data)
     print("stop_words_removed_data")
-    stop_words_removed_data.show()
+    # stop_words_removed_data.show()
 
     # Stem words
     print(colored("Stemming tokenized text", "green"))
     stem = F.udf(lambda tokens: lemmatize(tokens), ArrayType(StringType()))
     stemmed_data = stop_words_removed_data.withColumn("text_body_stemmed", stem("text_body_stop_words_removed"))
     print("stemmed_data")
-    stemmed_data.show()
+    # stemmed_data.show()
 
     # Shingle resulting body
     print(colored("Shingling resulting text", "green"))
@@ -92,7 +92,7 @@ def preprocess_files(bucket_name, file_name):
     shingle_table = shingled_data.select('Id', 'text_body_shingled')
     print(colored("Adding category/id mappings to Redis", "green"))
     print("shingle_table")
-    shingle_table.show()
+    shingle_table.head()
 
     # Create a mapping of article categories to article id's that fall under that category. Each key is an article category and the values the list of article id's.
     cat_id_map = answered_questions.select(F.explode('Tags').alias('Tag'), 'Id').groupBy(F.col('Tag')).agg(F.collect_list('Id').alias('Ids_list')).where(F.size(F.col('Ids_list')) < 200).withColumn('Ids', to_str_udf('Ids_list'))
