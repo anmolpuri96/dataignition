@@ -138,8 +138,10 @@ def preprocess_files(bucket_name, file_name):
         rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
         for row in rdd:
             # rdb.sadd('id:{}'.format(row.id), row.min_hash)
-            print("SET id:{0} {1}".format(row.id, row.min_hash))
+            f = open('id_minhash.txt', 'w')
+            f.write("SET id:{0} {1}\n".format(row.id, row.min_hash))
             # print('id:{}'.format(row.id), row.min_hash)
+        f.close()
     print(minhash_df.show(5, True))
     minhash_df.foreachPartition(write_minhash_data_to_redis)
 
