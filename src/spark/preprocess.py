@@ -170,7 +170,7 @@ def main():
     sql_context = SQLContext(sc)
 
     start_time = time.time()
-    preprocess_files("dataignition-tech-xml-parq", "posts.parquet")
+    preprocess_files("dataignition-tech-xml-parq", "posts-new.parquet")
     end_time = time.time()
     print(colored("Preprocessing run time (seconds): {0}".format(end_time - start_time), "magenta"))
     #redis connect
