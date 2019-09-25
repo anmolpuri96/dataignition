@@ -35,7 +35,7 @@ def compare_text(overlap_threshold=0.6):
     # cursor = connection.cursor()
 
     # Set up redis connection for reading in minhash values
-    rdb = redis.StrictRedis(config.REDIS_SERVER, port=6379, db=0)
+    rdb = redis.StrictRedis(config.REDIS_SERVER, port=6379, db=1)
 
     # For each category, go through each pair of articles and write the ones with a high enough minhash overlap to a database
     URL_HEADER = 'https://stackoverflow.com/questions/'
