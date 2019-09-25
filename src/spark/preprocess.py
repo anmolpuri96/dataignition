@@ -58,12 +58,12 @@ def preprocess_files(bucket_name, file_name):
 
     raw_data = sql_context.read.parquet("s3a://{0}/{1}".format(bucket_name, file_name))
 
-    unanswered_questions = raw_data.filter(raw_data.PostTypeId==1).filter(raw_data.AcceptedAnswerId.isNull())
+    answered_questions = raw_data.filter(raw_data.PostTypeId==1).filter(raw_data.AcceptedAnswerId.isNotNull())
 
     # Clean article text
     print(colored("[PROCESSING]: Cleaning post body", "green"))
     clean_body = F.udf(lambda body: filter_body(body), StringType())
-    clean_article_data = unanswered_questions.withColumn("cleaned_body", clean_body("Body"))
+    clean_article_data = answered_questions.withColumn("cleaned_body", clean_body("Body"))
     # Tokenize article text
     print(colored("[PROCESSING]: Tokenizing text vector...", "green"))
     tokenizer = Tokenizer(inputCol="cleaned_body", outputCol="text_body_tokenized")
@@ -95,10 +95,10 @@ def preprocess_files(bucket_name, file_name):
     shingle_table.show()
 
     # Create a mapping of article categories to article id's that fall under that category. Each key is an article category and the values the list of article id's.
-    cat_id_map = unanswered_questions.select(F.explode('Tags').alias('Tag'), 'Id').groupBy(F.col('Tag')).agg(F.collect_list('Id').alias('Ids_list')).where(F.size(F.col('Ids_list')) < 200).withColumn('Ids', to_str_udf('Ids_list'))
+    cat_id_map = answered_questions.select(F.explode('Tags').alias('Tag'), 'Id').groupBy(F.col('Tag')).agg(F.collect_list('Id').alias('Ids_list')).where(F.size(F.col('Ids_list')) < 200).withColumn('Ids', to_str_udf('Ids_list'))
     print(colored("Beginning writing category/id mapping to Redis", "green"))
+rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
     def write_cat_id_map_to_redis(rdd):
-        rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
         for row in rdd:
             rdb.sadd('cat:{}'.format(row.Tag), row.Ids)
     cat_id_map.foreachPartition(write_cat_id_map_to_redis)
@@ -134,8 +134,8 @@ def preprocess_files(bucket_name, file_name):
 
     # Write minhash data to redis. If pipeline=True, use pipeline
     # method of inserting data in Redis
+    rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
     def write_minhash_data_to_redis(rdd):
-        rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
         for row in rdd:
             rdb.sadd('id:{}'.format(row.id), row.min_hash)
     #print(minhash_df.show(5, True))
@@ -143,7 +143,8 @@ def preprocess_files(bucket_name, file_name):
 
     print(colored("Finished writing minhash data to Redis", "green"))
 
-    print(colored("[UPLOAD]: Writing preprocessed data to database...", "green"))
+    # print(colored("[UPLOAD]: Writing preprocessed data to database...", "green"))
+
 #    write_aws_s3(config.S3_BUCKET, config.S3_FOLDER_PREPROCESSED, shingled_data)
     # cf = configparser.ConfigParser()
     # cf.read('../config/db_properties.ini')
@@ -168,7 +169,8 @@ def main():
     preprocess_files("dataignition-tech-xml-parq", "posts.parquet")
     end_time = time.time()
     print(colored("Preprocessing run time (seconds): {0}".format(end_time - start_time), "magenta"))
-
+    #redis connect
+    #rdb.bgsave()
 
 if(__name__ == "__main__"):
     main()
