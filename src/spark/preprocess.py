@@ -97,11 +97,11 @@ def preprocess_files(bucket_name, file_name):
     # Create a mapping of article categories to article id's that fall under that category. Each key is an article category and the values the list of article id's.
     cat_id_map = answered_questions.select(F.explode('Tags').alias('Tag'), 'Id').groupBy(F.col('Tag')).agg(F.collect_list('Id').alias('Ids_list')).where(F.size(F.col('Ids_list')) < 200).withColumn('Ids', to_str_udf('Ids_list'))
     print(colored("Beginning writing category/id mapping to Redis", "green"))
-    def write_cat_id_map_to_redis(rdd):
-        rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+    def write_cat_id_map_to_redis(rdd, rdb):
         for row in rdd:
             rdb.sadd('cat:{}'.format(row.Tag), row.Ids)
-    cat_id_map.foreachPartition(write_cat_id_map_to_redis)
+    rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+    cat_id_map.foreachPartition(lambda x : write_cat_id_map_to_redis(x, rdb))
     print(cat_id_map.show(5,True))
     print(colored("Finished writing category/id mapping to Redis", "green"))
 
