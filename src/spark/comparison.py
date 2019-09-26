@@ -97,7 +97,7 @@ def main():
 
 
     start_time = time.time()
-    similarity_scores_df = compare_text()
+    similarity_scores_df = compare_text(0.9)
 
     # config = configparser.ConfigParser()
     # config.read('../config/db_properties.ini')
