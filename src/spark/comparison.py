@@ -49,12 +49,12 @@ def compare_text(overlap_threshold=0.6):
             unanswered_ids = eval(list(rdb1.smembers(category))[0])
             for ua_id in unanswered_ids:
                 print(ua_id)
-                minhash1 = rdb1.smembers('id:{}'.format(id))
+                minhash1 = rdb1.smembers('id:{}'.format(ua_id))
                 if minhash1:
                     print("minhash1")
                     minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
                     for a_id in answered_ids:
-                        minhash2 = rdb.smembers('id:{}'.format(pair[1]))
+                        minhash2 = rdb0.smembers('id:{}'.format(a_id))
                         if minhash2:
                             print("minhash2")
                             minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
