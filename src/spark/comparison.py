@@ -42,19 +42,21 @@ def compare_text(overlap_threshold=0.6):
 
     # For each category, go through each pair of articles and write the ones with a high enough minhash overlap to a database
     for category in rdb1.scan_iter('cat:*'):
-        answered_ids = eval(list(rdb0.smembers(category))[0])
-        unanswered_ids = eval(list(rdb1.smembers(category))[0])
-        for ua_id in unanswered_ids:
-            minhash1 = rdb1.smembers('id:{}'.format(id))
-            if minhash1:
-                minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
-                for a_id in answered_ids:
-                    minhash2 = rdb.smembers('id:{}'.format(pair[1]))
-                    if minhash1 and minhash2:
-                        minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
-                        overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
-                        if overlap > overlap_threshold:
-                            rdb2.sadd('id:{}'.format(ua_id), a_id)
+        answered_members = rdb0.smembers(category)
+        if answered_members:
+            answered_ids = eval(list(answered_members)[0])
+            unanswered_ids = eval(list(rdb1.smembers(category))[0])
+            for ua_id in unanswered_ids:
+                minhash1 = rdb1.smembers('id:{}'.format(id))
+                if minhash1:
+                    minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
+                    for a_id in answered_ids:
+                        minhash2 = rdb.smembers('id:{}'.format(pair[1]))
+                        if minhash1 and minhash2:
+                            minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
+                            overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
+                            if overlap > overlap_threshold:
+                                rdb2.sadd('id:{}'.format(ua_id), a_id)
 
 
     # URL_HEADER = 'https://stackoverflow.com/questions/'
