@@ -44,18 +44,23 @@ def compare_text(overlap_threshold=0.6):
     for category in rdb1.scan_iter('cat:*'):
         answered_members = rdb0.smembers(category)
         if answered_members:
+            print("answered_members")
             answered_ids = eval(list(answered_members)[0])
             unanswered_ids = eval(list(rdb1.smembers(category))[0])
             for ua_id in unanswered_ids:
                 minhash1 = rdb1.smembers('id:{}'.format(id))
                 if minhash1:
+                    print("minhash1")
                     minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
                     for a_id in answered_ids:
                         minhash2 = rdb.smembers('id:{}'.format(pair[1]))
-                        if minhash1 and minhash2:
+                        if minhash2:
+                            print("minhash2")
                             minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
                             overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
+                            print(overlap)
                             if overlap > overlap_threshold:
+                                print("overlap_threshold")
                                 rdb2.sadd('id:{}'.format(ua_id), a_id)
 
 
