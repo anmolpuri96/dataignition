@@ -11,7 +11,7 @@ import redis
 from termcolor import colored
 
 from pyspark.conf import SparkConf
-# from pyspark.context import SparkContext
+from pyspark.context import SparkContext
 # from pyspark.sql import SQLContext
 from pyspark.sql.functions import udf, col
 
