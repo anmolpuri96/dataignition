@@ -7,6 +7,7 @@ import mmh3
 import itertools
 import pickle
 import redis
+import ast
 # import psycopg2
 from termcolor import colored
 
