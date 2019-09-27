@@ -40,7 +40,10 @@ def compare_text(overlap_threshold=0.6):
     rdb1 = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
     rdb2 = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
 
-    # For each category, go through each pair of articles and write the ones with a high enough minhash overlap to a database
+    # For each category, go through each unanswered post and output the answered ones with a high enough minhash overlap to redis
+
+    #Need to distribute this using spark somehow (maybe spark-redis?)
+
     for category in rdb1.scan_iter('cat:*'):
         answered_members = rdb0.smembers(category)
         if answered_members:

@@ -87,7 +87,7 @@ def preprocess_files(bucket_name, file_name):
 
     # Shingle resulting body
     print(colored("Shingling resulting text", "green"))
-    shingle = F.udf(lambda tokens: get_n_gram_shingles(tokens, 3), StringType())
+    shingle = F.udf(lambda tokens: get_n_gram_shingles(tokens, 9), StringType())
     shingled_data = stemmed_data.withColumn("text_body_shingled", shingle("text_body_stemmed"))
     shingle_table = shingled_data.select('Id', 'text_body_shingled')
     print(colored("Adding category/id mappings to Redis", "green"))
