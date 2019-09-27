@@ -60,6 +60,7 @@ def preprocess_files(bucket_name, file_name):
 
     #LIMIT TO 10 initially
     unanswered_questions = raw_data.filter(raw_data.PostTypeId==1).filter(raw_data.AcceptedAnswerId.isNull())
+    print(unanswered_questions.count())
 
     # Clean article text
     print(colored("[PROCESSING]: Cleaning post body", "green"))
