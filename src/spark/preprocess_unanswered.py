@@ -65,7 +65,7 @@ def preprocess_files(bucket_name, file_name):
     # Clean article text
     print(colored("[PROCESSING]: Cleaning post body", "green"))
     clean_body = F.udf(lambda body: filter_body(body), StringType())
-    clean_article_data = answered_questions.withColumn("cleaned_body", clean_body("Body"))
+    clean_article_data = unanswered_questions.withColumn("cleaned_body", clean_body("Body"))
     # Tokenize article text
     print(colored("[PROCESSING]: Tokenizing text vector...", "green"))
     tokenizer = Tokenizer(inputCol="cleaned_body", outputCol="text_body_tokenized")
@@ -97,7 +97,7 @@ def preprocess_files(bucket_name, file_name):
     shingle_table.head()
 
     # Create a mapping of article categories to article id's that fall under that category. Each key is an article category and the values the list of article id's.
-    cat_id_map = answered_questions.select(F.explode('Tags').alias('Tag'), 'Id').groupBy(F.col('Tag')).agg(F.collect_list('Id').alias('Ids_list')).where(F.size(F.col('Ids_list')) < 200).withColumn('Ids', to_str_udf('Ids_list'))
+    cat_id_map = unanswered_questions.select(F.explode('Tags').alias('Tag'), 'Id').groupBy(F.col('Tag')).agg(F.collect_list('Id').alias('Ids_list')).where(F.size(F.col('Ids_list')) < 200).withColumn('Ids', to_str_udf('Ids_list'))
     print(colored("Beginning writing category/id mapping to Redis", "green"))
     def write_cat_id_map_to_redis(rdd):
         rdb = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
