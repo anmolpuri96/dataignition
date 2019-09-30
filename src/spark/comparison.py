@@ -114,8 +114,9 @@ def compare_text(overlap_threshold=0.9):
                         # print("minhash2")
                         minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
                         overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
-                        print(overlap)
-                        # if overlap > overlap_threshold:
+                        # print(overlap)
+                        if overlap >= overlap_threshold:
+                            print(overlap)
                             # print("overlap_threshold")
                             # id_map_redis.sadd('id:{}'.format(ids[0]), ids[1])
 
