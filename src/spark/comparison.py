@@ -22,16 +22,6 @@ from pyspark.sql.types import IntegerType, FloatType, ArrayType
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config")
 # import config
 
-def get_minhash_ua(id):
-    minhash = unanswered_redis.smembers('id:{}'.format(id))
-    if minhash:
-        return ast.literal_eval(list(minhash)[0].decode('utf-8'))
-
-def get_minhash_a(id):
-    minhash = answered_redis.smembers('id:{}'.format(id))
-    if minhash:
-        return ast.literal_eval(list(minhash)[0].decode('utf-8'))
-
 def compare_text(overlap_threshold=0.6):
     """
     Overview: read in MinHash Values for articles, group by category, and find overlaps in MinHash values
@@ -47,9 +37,19 @@ def compare_text(overlap_threshold=0.6):
     # cursor = connection.cursor()
 
     # Set up redis connection for reading in minhash values
-    # answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-    # unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-    # id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+    answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+    unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
+    id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+
+    def get_minhash_ua(id):
+        minhash = unanswered_redis.smembers('id:{}'.format(id))
+        if minhash:
+            return ast.literal_eval(list(minhash)[0].decode('utf-8'))
+
+    def get_minhash_a(id):
+        minhash = answered_redis.smembers('id:{}'.format(id))
+        if minhash:
+            return ast.literal_eval(list(minhash)[0].decode('utf-8'))
 
     # For each category, go through each unanswered post and output the answered ones with a high enough minhash overlap to redis
 
@@ -74,8 +74,8 @@ def compare_text(overlap_threshold=0.6):
 
             minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
             minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
-            unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(592332))
-            answered_minhash = ids_df.withColumn("answered_minhash", minhash_a(4169252))
+            unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.lit("UnansweredId")))
+            answered_minhash = ids_df.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
 
             unanswered_minhash.show()
             answered_minhash.show()
@@ -122,9 +122,9 @@ def main():
     global sc
     global sql_context
 
-    global answered_redis
-    global unanswered_redis
-    global id_map_redis
+    # global answered_redis
+    # global unanswered_redis
+    # global id_map_redis
 
     sc = SparkContext(conf=spark_conf)
     sc.setLogLevel("ERROR")
@@ -132,9 +132,9 @@ def main():
     # sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/lib/util.py")
     # sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config/config.py")
 
-    answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-    unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-    id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+    # answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+    # unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
+    # id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
 
 
     start_time = time.time()
