@@ -34,6 +34,13 @@ def get_minhash_a(id):
     if minhash:
         return ast.literal_eval(list(minhash)[0].decode('utf-8'))
 
+def overlap(unanswered_minhash, answered_minhash):
+    overlap = 1.0 * len(set(unanswered_minhash).intersection(set(answered_minhash)))/len(unanswered_minhash)
+    if overlap > 0.8:
+        return overlap
+    else:
+        return None
+
 def compare_text(overlap_threshold=0.6):
     """
     Overview: read in MinHash Values for articles, group by category, and find overlaps in MinHash values
@@ -79,7 +86,19 @@ def compare_text(overlap_threshold=0.6):
             answered_minhash = unanswered_minhash.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
 
             final_df = answered_minhash.filter(answered_minhash.answered_minhash.isNotNull()).filter(answered_minhash.unanswered_minhash.isNotNull())
-            final_df.show()
+
+            overlap_udf = F.udf(overlap)
+
+            overlap_df = final_df.withColumn("overlap", overlap_udf("unanswered_minhash", "answered_minhash")).filter(final_df.overlap.isNotNull())
+            print(category)
+            overlap_df.show()
+
+            # def write_minhash_data_to_redis(rdd):
+            #     id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+            #     for row in rdd:
+            #         rdb.sadd('id:{}'.format(row.UnansweredId), row.AnsweredId)
+
+
 
             # for ids in id_pairs:
             #     minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
