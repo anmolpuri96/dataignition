@@ -72,14 +72,11 @@ def compare_text(overlap_threshold=0.6):
                 StructField("AnsweredId", StringType(), True),
             ])
             ids_df = sql_context.createDataFrame(id_pairs, schema)
-            ids_df.show()
 
             minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
             minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
             unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.col("UnansweredId")))
             answered_minhash = unanswered_minhash.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
-
-            answered_minhash.show()
 
             final_df = answered_minhash.filter(answered_minhash.answered_minhash.isNotNull()).filter(answered_minhash.unanswered_minhash.isNotNull())
             final_df.show()
