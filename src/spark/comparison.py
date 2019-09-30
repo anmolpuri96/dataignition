@@ -100,7 +100,7 @@ def main():
     spark_conf = SparkConf().setAppName("Spark Custom MinHashLSH").set("spark.cores.max", "30")
 
     global sc
-    # global sql_context
+    global sql_context
 
     sc = SparkContext(conf=spark_conf)
     sc.setLogLevel("ERROR")
