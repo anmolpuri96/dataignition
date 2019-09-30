@@ -67,7 +67,7 @@ def compare_text(overlap_threshold=0.6):
                         print(overlap)
                         if overlap > overlap_threshold:
                             print("overlap_threshold")
-                            rdb2.sadd('id:{}'.format(ua_id), a_id)
+                            print('id:{}'.format(ids[0]), ids[1])
 
     # URL_HEADER = 'https://stackoverflow.com/questions/'
     # for category in rdb.scan_iter('cat:*'):
