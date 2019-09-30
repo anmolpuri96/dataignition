@@ -22,6 +22,16 @@ from pyspark.sql.types import IntegerType, FloatType, ArrayType
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config")
 # import config
 
+def get_minhash_ua(id):
+    minhash = unanswered_redis.smembers('id:{}'.format(id))
+    if minhash:
+        return ast.literal_eval(list(minhash)[0].decode('utf-8'))
+
+def get_minhash_a(id):
+    minhash = answered_redis.smembers('id:{}'.format(id))
+    if minhash:
+        return ast.literal_eval(list(minhash)[0].decode('utf-8'))
+
 def compare_text(overlap_threshold=0.6):
     """
     Overview: read in MinHash Values for articles, group by category, and find overlaps in MinHash values
@@ -51,20 +61,29 @@ def compare_text(overlap_threshold=0.6):
             answered_ids = eval(list(answered_members)[0])
             unanswered_ids = eval(list(unanswered_redis.smembers(category))[0])
             temp = list(itertools.product(unanswered_ids, answered_ids))
-            out = []
+            id_pairs = []
             for elem in temp:
                 if elem[0]!= elem[1]:
-                    out.append(elem)
+                    id_pairs.append(elem)
             schema = StructType([
                 StructField("UnansweredId", StringType(), True),
                 StructField("AnsweredId", StringType(), True),
             ])
-            DF = sql_context.createDataFrame(out, schema)
-            DF.show()
-            # break
-        # break
+            ids_df = sql_context.createDataFrame(id_pairs, schema)
+            ids_df.show()
 
-            # for ids in out:
+            minhash_ua = udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
+            minhash_a = udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
+            unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua("UnansweredId"))
+            answered_minhash = ids_df.withColumn("answered_minhash", minhash_a("AnsweredId"))
+
+            unanswered_minhash.show()
+            answered_minhash.show()
+            ids_df.show()
+            break
+        break
+
+            # for ids in id_pairs:
             #     minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
             #     if minhash1:
             #         print("minhash1")
