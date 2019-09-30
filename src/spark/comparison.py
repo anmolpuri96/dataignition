@@ -15,7 +15,7 @@ from pyspark.conf import SparkConf
 from pyspark.context import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql.types import StructType, StructField, StringType
-from pyspark.sql.functions import udf, col
+from pyspark.sql.functions as F
 
 from pyspark.sql.types import IntegerType, FloatType, ArrayType
 
@@ -72,10 +72,10 @@ def compare_text(overlap_threshold=0.6):
             ids_df = sql_context.createDataFrame(id_pairs, schema)
             ids_df.show()
 
-            minhash_ua = udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
-            minhash_a = udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
-            unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua("UnansweredId"))
-            answered_minhash = ids_df.withColumn("answered_minhash", minhash_a("AnsweredId"))
+            minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
+            minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
+            unanswered_minhash = ids_df.withColumn("unanswered_minhash", F.lit(1))
+            answered_minhash = ids_df.withColumn("answered_minhash", F.lit(2))
 
             unanswered_minhash.show()
             answered_minhash.show()
