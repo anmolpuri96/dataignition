@@ -76,6 +76,9 @@ def compare_text(overlap_threshold=0.6):
             ids_df = sql_context.createDataFrame(id_pairs, schema)
             ids_df.show()
 
+            print(get_minhash_ua(id_pairs[0][0]))
+            print(get_minhash_a(id_pairs[0][1]))
+
             minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
             minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
             unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.lit("UnansweredId")))
