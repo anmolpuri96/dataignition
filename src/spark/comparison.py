@@ -64,7 +64,7 @@ def compare_text(overlap_threshold=0.9):
 
     #Need to distribute this using spark somehow (maybe spark-redis?)
 
-    for category in unanswered_redis.scan_iter('cat:*'):
+    for category in unanswered_redis.scan_iter('cat:gridgain*'):
         answered_members = answered_redis.smembers(category)
         if answered_members:
             answered_ids = eval(list(answered_members)[0])
@@ -118,7 +118,7 @@ def compare_text(overlap_threshold=0.9):
                         if overlap >= overlap_threshold:
                             print(overlap)
                             # print("overlap_threshold")
-                            # id_map_redis.sadd('id:{}'.format(ids[0]), ids[1])
+                            id_map_redis.sadd('id:{}'.format(ids[0]), ids[1])
 
     # URL_HEADER = 'https://stackoverflow.com/questions/'
     # for category in rdb.scan_iter('cat:*'):
