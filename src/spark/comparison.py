@@ -13,7 +13,7 @@ from termcolor import colored
 
 from pyspark.conf import SparkConf
 from pyspark.context import SparkContext
-# from pyspark.sql import SQLContext
+from pyspark.sql import SQLContext
 from pyspark.sql.functions import udf, col
 
 from pyspark.sql.types import IntegerType, FloatType, ArrayType
@@ -36,38 +36,46 @@ def compare_text(overlap_threshold=0.6):
     # cursor = connection.cursor()
 
     # Set up redis connection for reading in minhash values
-    rdb0 = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-    rdb1 = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-    rdb2 = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+    answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+    unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
+    id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
 
     # For each category, go through each unanswered post and output the answered ones with a high enough minhash overlap to redis
 
     #Need to distribute this using spark somehow (maybe spark-redis?)
 
-    for category in rdb1.scan_iter('cat:*'):
-        answered_members = rdb0.smembers(category)
+    for category in unanswered_redis.scan_iter('cat:*'):
+        answered_members = answered_redis.smembers(category)
         if answered_members:
             answered_ids = eval(list(answered_members)[0])
-            unanswered_ids = eval(list(rdb1.smembers(category))[0])
+            unanswered_ids = eval(list(unanswered_redis.smembers(category))[0])
             temp = list(itertools.product(unanswered_ids, answered_ids))
             out = []
             for elem in temp:
                 if elem[0]!= elem[1]:
                     out.append(elem)
-            for ids in out:
-                minhash1 = rdb1.smembers('id:{}'.format(ids[0]))
-                if minhash1:
-                    print("minhash1")
-                    minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
-                    minhash2 = rdb0.smembers('id:{}'.format(ids[1]))
-                    if minhash2:
-                        print("minhash2")
-                        minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
-                        overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
-                        print(overlap)
-                        if overlap > overlap_threshold:
-                            print("overlap_threshold")
-                            print('id:{}'.format(ids[0]), ids[1])
+            schema = StructType([
+                StructField("UnansweredId", StringType(), True),
+                StructField("AnsweredId", StringType(), True),
+            ])
+            DF = sql_context.createDataFrame(out, schema)
+            DF.head()
+            break
+
+            # for ids in out:
+            #     minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
+            #     if minhash1:
+            #         print("minhash1")
+            #         minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
+            #         minhash2 = answered_redis.smembers('id:{}'.format(ids[1]))
+            #         if minhash2:
+            #             print("minhash2")
+            #             minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
+            #             overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
+            #             print(overlap)
+            #             if overlap > overlap_threshold:
+            #                 print("overlap_threshold")
+            #                 id_map_redis.sadd('id:{}'.format(ids[0]), ids[1])
 
     # URL_HEADER = 'https://stackoverflow.com/questions/'
     # for category in rdb.scan_iter('cat:*'):
@@ -95,7 +103,7 @@ def main():
 
     sc = SparkContext(conf=spark_conf)
     sc.setLogLevel("ERROR")
-    # sql_context = SQLContext(sc)
+    sql_context = SQLContext(sc)
     # sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/lib/util.py")
     # sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config/config.py")
 
