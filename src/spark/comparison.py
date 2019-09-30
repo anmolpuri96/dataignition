@@ -60,7 +60,7 @@ def compare_text(overlap_threshold=0.6):
                 StructField("AnsweredId", StringType(), True),
             ])
             DF = sql_context.createDataFrame(out, schema)
-            DF.head()
+            DF.show()
             # break
         # break
 
