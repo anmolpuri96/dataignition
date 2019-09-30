@@ -81,8 +81,8 @@ def compare_text(overlap_threshold=0.6):
 
             minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
             minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
-            unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.lit("UnansweredId")))
-            answered_minhash = ids_df.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
+            unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua("456654"))
+            answered_minhash = ids_df.withColumn("answered_minhash", minhash_a("2249716"))
 
             unanswered_minhash.show()
             answered_minhash.show()
