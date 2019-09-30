@@ -27,16 +27,12 @@ def get_minhash_ua(id):
     minhash = unanswered_redis.smembers('id:{}'.format(id))
     if minhash:
         return ast.literal_eval(list(minhash)[0].decode('utf-8'))
-    else:
-        return []
 
 def get_minhash_a(id):
     answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
     minhash = answered_redis.smembers('id:{}'.format(id))
     if minhash:
         return ast.literal_eval(list(minhash)[0].decode('utf-8'))
-    else:
-        return []
 
 def compare_text(overlap_threshold=0.6):
     """
