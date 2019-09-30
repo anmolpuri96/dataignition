@@ -61,8 +61,8 @@ def compare_text(overlap_threshold=0.6):
             ])
             DF = sql_context.createDataFrame(out, schema)
             DF.head()
-            break
-        break
+            # break
+        # break
 
             # for ids in out:
             #     minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
