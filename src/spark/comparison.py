@@ -22,6 +22,22 @@ from pyspark.sql.types import IntegerType, FloatType, ArrayType
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config")
 # import config
 
+def get_minhash_ua(id):
+    unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
+    minhash = unanswered_redis.smembers('id:{}'.format(id))
+    if minhash:
+        return ast.literal_eval(list(minhash)[0].decode('utf-8'))
+    else:
+        return []
+
+def get_minhash_a(id):
+    answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+    minhash = answered_redis.smembers('id:{}'.format(id))
+    if minhash:
+        return ast.literal_eval(list(minhash)[0].decode('utf-8'))
+    else:
+        return []
+
 def compare_text(overlap_threshold=0.6):
     """
     Overview: read in MinHash Values for articles, group by category, and find overlaps in MinHash values
@@ -40,22 +56,6 @@ def compare_text(overlap_threshold=0.6):
     answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
     unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
     id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
-
-    def get_minhash_ua(id):
-        unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-        minhash = unanswered_redis.smembers('id:{}'.format(id))
-        if minhash:
-            return ast.literal_eval(list(minhash)[0].decode('utf-8'))
-        else:
-            return []
-
-    def get_minhash_a(id):
-        answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-        minhash = answered_redis.smembers('id:{}'.format(id))
-        if minhash:
-            return ast.literal_eval(list(minhash)[0].decode('utf-8'))
-        else:
-            return []
 
     # For each category, go through each unanswered post and output the answered ones with a high enough minhash overlap to redis
 
