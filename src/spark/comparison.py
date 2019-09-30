@@ -14,7 +14,7 @@ from termcolor import colored
 from pyspark.conf import SparkConf
 from pyspark.context import SparkContext
 from pyspark.sql import SQLContext
-from pyspark.sql.types import StructType, StructField
+from pyspark.sql.types import StructType, StructField, StringType
 from pyspark.sql.functions import udf, col
 
 from pyspark.sql.types import IntegerType, FloatType, ArrayType
