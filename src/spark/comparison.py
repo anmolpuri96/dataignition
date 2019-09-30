@@ -81,6 +81,9 @@ def compare_text(overlap_threshold=0.6):
 
             answered_minhash.show()
 
+            final_df = answered_minhash.filter(answered_minhash.answered_minhash.isNotNull()).filter(answered_minhash.unanswered_minhash.isNotNull())
+            final_df.show()
+
             # for ids in id_pairs:
             #     minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
             #     if minhash1:
