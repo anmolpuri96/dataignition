@@ -42,6 +42,7 @@ def compare_text(overlap_threshold=0.6):
     id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
 
     def get_minhash_ua(id):
+        unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
         minhash = unanswered_redis.smembers('id:{}'.format(id))
         if minhash:
             return ast.literal_eval(list(minhash)[0].decode('utf-8'))
@@ -49,6 +50,7 @@ def compare_text(overlap_threshold=0.6):
             return []
 
     def get_minhash_a(id):
+        answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
         minhash = answered_redis.smembers('id:{}'.format(id))
         if minhash:
             return ast.literal_eval(list(minhash)[0].decode('utf-8'))
@@ -76,8 +78,8 @@ def compare_text(overlap_threshold=0.6):
             ids_df = sql_context.createDataFrame(id_pairs, schema)
             ids_df.show()
 
-            minhash_ua = F.udf(lambda id: get_minhash_ua(id), StringType())
-            minhash_a = F.udf(lambda id: get_minhash_a(id), StringType())
+            minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
+            minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
             unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.col("UnansweredId")))
             answered_minhash = unanswered_minhash.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
 
