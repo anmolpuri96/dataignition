@@ -41,11 +41,11 @@ def overlap(unanswered_minhash, answered_minhash):
     else:
         return None
 
-def compare_text(overlap_threshold=0.6):
+def compare_text(overlap_threshold=0.9):
     """
     Overview: read in MinHash Values for articles, group by category, and find overlaps in MinHash values
 
-    Input: optional threshold for overlap scores. If two articles are above this threshold, they are written to the Postgres database (default 0.6)
+    Input: optional threshold for overlap scores. If two articles are above this threshold, they are written to the Postgres database (default 0.9)
     Output: none
     """
     # cf = configparser.ConfigParser()
