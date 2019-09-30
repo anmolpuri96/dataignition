@@ -15,7 +15,7 @@ from pyspark.conf import SparkConf
 from pyspark.context import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql.types import StructType, StructField, StringType
-from pyspark.sql.functions as F
+import pyspark.sql.functions as F
 
 from pyspark.sql.types import IntegerType, FloatType, ArrayType
 
