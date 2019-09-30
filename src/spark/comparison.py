@@ -89,7 +89,8 @@ def compare_text(overlap_threshold=0.6):
 
             overlap_udf = F.udf(overlap)
 
-            overlap_df = final_df.withColumn("overlap", overlap_udf("unanswered_minhash", "answered_minhash")).filter(final_df.overlap.isNotNull())
+            overlap_df = final_df.withColumn("overlap", overlap_udf("unanswered_minhash", "answered_minhash"))
+            overlap_df = overlap_df.filter(overlap_df.overlap.isNotNull())
             print(category)
             overlap_df.show()
 
