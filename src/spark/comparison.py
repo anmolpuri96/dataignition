@@ -45,11 +45,15 @@ def compare_text(overlap_threshold=0.6):
         minhash = unanswered_redis.smembers('id:{}'.format(id))
         if minhash:
             return ast.literal_eval(list(minhash)[0].decode('utf-8'))
+        else:
+            return []
 
     def get_minhash_a(id):
         minhash = answered_redis.smembers('id:{}'.format(id))
         if minhash:
             return ast.literal_eval(list(minhash)[0].decode('utf-8'))
+        else:
+            return []
 
     # For each category, go through each unanswered post and output the answered ones with a high enough minhash overlap to redis
 
