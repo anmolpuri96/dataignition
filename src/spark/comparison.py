@@ -74,28 +74,28 @@ def compare_text(overlap_threshold=0.6):
             for elem in temp:
                 if elem[0]!= elem[1]:
                     id_pairs.append(elem)
-            schema = StructType([
-                StructField("UnansweredId", StringType(), True),
-                StructField("AnsweredId", StringType(), True),
-            ])
-            ids_df = sql_context.createDataFrame(id_pairs, schema)
-            print(ids_df.count())
-
-            minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
-            minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
-            unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.col("UnansweredId")))
-            answered_minhash = unanswered_minhash.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
-
-            final_df = answered_minhash.filter(answered_minhash.answered_minhash.isNotNull()).filter(answered_minhash.unanswered_minhash.isNotNull())
-            print(final_df.count())
-
-            overlap_udf = F.udf(overlap)
-
-            overlap_df = final_df.withColumn("overlap", overlap_udf("unanswered_minhash", "answered_minhash"))
-            overlap_df = overlap_df.filter(overlap_df.overlap.isNotNull())
-            print(overlap_df.count())
+            # schema = StructType([
+            #     StructField("UnansweredId", StringType(), True),
+            #     StructField("AnsweredId", StringType(), True),
+            # ])
+            # ids_df = sql_context.createDataFrame(id_pairs, schema)
+            # print(ids_df.count())
+            #
+            # minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
+            # minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
+            # unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.col("UnansweredId")))
+            # answered_minhash = unanswered_minhash.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
+            #
+            # final_df = answered_minhash.filter(answered_minhash.answered_minhash.isNotNull()).filter(answered_minhash.unanswered_minhash.isNotNull())
+            # print(final_df.count())
+            #
+            # overlap_udf = F.udf(overlap)
+            #
+            # overlap_df = final_df.withColumn("overlap", overlap_udf("unanswered_minhash", "answered_minhash"))
+            # overlap_df = overlap_df.filter(overlap_df.overlap.isNotNull())
+            # print(overlap_df.count())
             print(category)
-            overlap_df.show()
+            # overlap_df.show()
 
             # def write_minhash_data_to_redis(rdd):
             #     id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
@@ -104,20 +104,20 @@ def compare_text(overlap_threshold=0.6):
 
 
 
-            # for ids in id_pairs:
-            #     minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
-            #     if minhash1:
-            #         print("minhash1")
-            #         minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
-            #         minhash2 = answered_redis.smembers('id:{}'.format(ids[1]))
-            #         if minhash2:
-            #             print("minhash2")
-            #             minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
-            #             overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
-            #             print(overlap)
-            #             if overlap > overlap_threshold:
-            #                 print("overlap_threshold")
-            #                 id_map_redis.sadd('id:{}'.format(ids[0]), ids[1])
+            for ids in id_pairs:
+                minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
+                if minhash1:
+                    # print("minhash1")
+                    minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
+                    minhash2 = answered_redis.smembers('id:{}'.format(ids[1]))
+                    if minhash2:
+                        # print("minhash2")
+                        minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
+                        overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
+                        # print(overlap)
+                        # if overlap > overlap_threshold:
+                            # print("overlap_threshold")
+                            # id_map_redis.sadd('id:{}'.format(ids[0]), ids[1])
 
     # URL_HEADER = 'https://stackoverflow.com/questions/'
     # for category in rdb.scan_iter('cat:*'):
