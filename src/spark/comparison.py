@@ -69,6 +69,9 @@ def compare_text(overlap_threshold=0.9):
     dist_categories = sc.parallelize(categories)
 
     def calculate_overhead_for_category(category):
+        answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+        unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
+        id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
         answered_members = answered_redis.smembers(category)
         if answered_members:
             answered_ids = eval(list(answered_members)[0])
