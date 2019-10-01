@@ -68,67 +68,65 @@ def compare_text(overlap_threshold=0.9):
         categories.append(category)
     dist_categories = sc.parallelize(categories)
 
-    def calculate_overhead_for_category(categoryPart):
-        print(categoryPart)
-        for category in categoryPart:
-            print(category)
-        # answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-        # unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-        # id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
-        # answered_members = answered_redis.smembers(category)
-        # if answered_members:
-        #     answered_ids = eval(list(answered_members)[0])
-        #     unanswered_ids = eval(list(unanswered_redis.smembers(category))[0])
-        #     temp = list(itertools.product(unanswered_ids, answered_ids))
-        #     id_pairs = []
-        #     for elem in temp:
-        #         if elem[0]!= elem[1]:
-        #             id_pairs.append(elem)
-        #     # schema = StructType([
-        #     #     StructField("UnansweredId", StringType(), True),
-        #     #     StructField("AnsweredId", StringType(), True),
-        #     # ])
-        #     # ids_df = sql_context.createDataFrame(id_pairs, schema)
-        #     # print(ids_df.count())
-        #     #
-        #     # minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
-        #     # minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
-        #     # unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.col("UnansweredId")))
-        #     # answered_minhash = unanswered_minhash.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
-        #     #
-        #     # final_df = answered_minhash.filter(answered_minhash.answered_minhash.isNotNull()).filter(answered_minhash.unanswered_minhash.isNotNull())
-        #     # print(final_df.count())
-        #     #
-        #     # overlap_udf = F.udf(overlap)
-        #     #
-        #     # overlap_df = final_df.withColumn("overlap", overlap_udf("unanswered_minhash", "answered_minhash"))
-        #     # overlap_df = overlap_df.filter(overlap_df.overlap.isNotNull())
-        #     # print(overlap_df.count())
-        #     print(category)
-        #     # overlap_df.show()
-        #
-        #     # def write_minhash_data_to_redis(rdd):
-        #     #     id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
-        #     #     for row in rdd:
-        #     #         rdb.sadd('id:{}'.format(row.UnansweredId), row.AnsweredId)
-        #
-        #
-        #
-        #     for ids in id_pairs:
-        #         minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
-        #         if minhash1:
-        #             # print("minhash1")
-        #             minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
-        #             minhash2 = answered_redis.smembers('id:{}'.format(ids[1]))
-        #             if minhash2:
-        #                 # print("minhash2")
-        #                 minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
-        #                 overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
-        #                 # print(overlap)
-        #                 if overlap >= overlap_threshold:
-        #                     print(overlap)
-        #                     # print("overlap_threshold")
-        #                     id_map_redis.sadd('id:{}'.format(ids[0]), "{0}_{1}".format(ids[1], overlap))
+    def calculate_overhead_for_category(category_partition):
+        for category in category_partition:
+            answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+            unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
+            id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+            answered_members = answered_redis.smembers(category)
+            if answered_members:
+                answered_ids = eval(list(answered_members)[0])
+                unanswered_ids = eval(list(unanswered_redis.smembers(category))[0])
+                temp = list(itertools.product(unanswered_ids, answered_ids))
+                id_pairs = []
+                for elem in temp:
+                    if elem[0]!= elem[1]:
+                        id_pairs.append(elem)
+                # schema = StructType([
+                #     StructField("UnansweredId", StringType(), True),
+                #     StructField("AnsweredId", StringType(), True),
+                # ])
+                # ids_df = sql_context.createDataFrame(id_pairs, schema)
+                # print(ids_df.count())
+                #
+                # minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
+                # minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
+                # unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.col("UnansweredId")))
+                # answered_minhash = unanswered_minhash.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
+                #
+                # final_df = answered_minhash.filter(answered_minhash.answered_minhash.isNotNull()).filter(answered_minhash.unanswered_minhash.isNotNull())
+                # print(final_df.count())
+                #
+                # overlap_udf = F.udf(overlap)
+                #
+                # overlap_df = final_df.withColumn("overlap", overlap_udf("unanswered_minhash", "answered_minhash"))
+                # overlap_df = overlap_df.filter(overlap_df.overlap.isNotNull())
+                # print(overlap_df.count())
+                print(category)
+                # overlap_df.show()
+
+                # def write_minhash_data_to_redis(rdd):
+                #     id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+                #     for row in rdd:
+                #         rdb.sadd('id:{}'.format(row.UnansweredId), row.AnsweredId)
+
+
+
+                for ids in id_pairs:
+                    minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
+                    if minhash1:
+                        # print("minhash1")
+                        minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
+                        minhash2 = answered_redis.smembers('id:{}'.format(ids[1]))
+                        if minhash2:
+                            # print("minhash2")
+                            minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
+                            overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
+                            # print(overlap)
+                            if overlap >= overlap_threshold:
+                                print(overlap)
+                                # print("overlap_threshold")
+                                id_map_redis.sadd('id:{}'.format(ids[0]), "{0}_{1}".format(ids[1], overlap))
     dist_categories.foreachPartition(calculate_overhead_for_category)
     # URL_HEADER = 'https://stackoverflow.com/questions/'
     # for category in rdb.scan_iter('cat:*'):
