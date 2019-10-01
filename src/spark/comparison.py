@@ -46,22 +46,26 @@ def compare_text(overlap_threshold=0.9):
     #Need to distribute this using spark somehow (maybe spark-redis?)
     categories = []
     for category in unanswered_redis.scan_iter('cat:*'):
-        answered_members = answered_redis.smembers(category)
-        if answered_members:
-            answered_ids = eval(list(answered_members)[0])
-            unanswered_ids = eval(list(unanswered_redis.smembers(category))[0])
-            temp = list(itertools.product(unanswered_ids, answered_ids))
-            id_pairs = []
-            for elem in temp:
-                if elem[0]!= elem[1]:
-                    id_pairs.append(elem)
-            print(category)
-            id_pairs_partition = sc.parallelize(id_pairs)
-            def compute_minhash_overhead(id_pairs_partition):
-                answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-                unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-                id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
-                for ids in id_pairs_partition:
+        categories.append(category)
+    dist_categories = sc.parallelize(categories)
+
+    def calculate_overhead_for_category(category_partition):
+        for category in category_partition:
+            answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
+            unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
+            id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+            answered_members = answered_redis.smembers(category)
+            if answered_members:
+                answered_ids = eval(list(answered_members)[0])
+                unanswered_ids = eval(list(unanswered_redis.smembers(category))[0])
+                temp = list(itertools.product(unanswered_ids, answered_ids))
+                id_pairs = []
+                for elem in temp:
+                    if elem[0]!= elem[1]:
+                        id_pairs.append(elem)
+                print(category)
+
+                for ids in id_pairs:
                     minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
                     if minhash1:
                         # print("minhash1")
@@ -76,8 +80,7 @@ def compare_text(overlap_threshold=0.9):
                                 print(overlap)
                                 # print("overlap_threshold")
                                 id_map_redis.sadd('id:{}'.format(ids[0]), "{0}_{1}".format(ids[1], overlap))
-            id_pairs_partition.foreachPartition(compute_minhash_overhead)
-    # dist_categories.foreachPartition(calculate_overhead_for_category)
+    dist_categories.foreachPartition(calculate_overhead_for_category)
 
 def main():
     spark_conf = SparkConf().setAppName("Spark Custom MinHashLSH").set("spark.cores.max", "30")
