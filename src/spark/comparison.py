@@ -118,7 +118,7 @@ def compare_text(overlap_threshold=0.9):
                         if overlap >= overlap_threshold:
                             print(overlap)
                             # print("overlap_threshold")
-                            id_map_redis.sadd('id:{}'.format(ids[0]), (ids[1]+"_"+str(overlap)))
+                            id_map_redis.sadd('id:{}'.format(ids[0]), (str(ids[1])+"_"+overlap))
 
     # URL_HEADER = 'https://stackoverflow.com/questions/'
     # for category in rdb.scan_iter('cat:*'):
