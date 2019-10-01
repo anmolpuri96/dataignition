@@ -22,25 +22,6 @@ from pyspark.sql.types import IntegerType, FloatType, ArrayType
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config")
 # import config
 
-def get_minhash_ua(id):
-    unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-    minhash = unanswered_redis.smembers('id:{}'.format(id))
-    if minhash:
-        return ast.literal_eval(list(minhash)[0].decode('utf-8'))
-
-def get_minhash_a(id):
-    answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-    minhash = answered_redis.smembers('id:{}'.format(id))
-    if minhash:
-        return ast.literal_eval(list(minhash)[0].decode('utf-8'))
-
-def overlap(unanswered_minhash, answered_minhash):
-    overlap = 1.0 * len(set(unanswered_minhash).intersection(set(answered_minhash)))/len(unanswered_minhash)
-    if overlap > 0.8:
-        return overlap
-    else:
-        return None
-
 def compare_text(overlap_threshold=0.9):
     """
     Overview: read in MinHash Values for articles, group by category, and find overlaps in MinHash values
@@ -82,35 +63,7 @@ def compare_text(overlap_threshold=0.9):
                 for elem in temp:
                     if elem[0]!= elem[1]:
                         id_pairs.append(elem)
-                # schema = StructType([
-                #     StructField("UnansweredId", StringType(), True),
-                #     StructField("AnsweredId", StringType(), True),
-                # ])
-                # ids_df = sql_context.createDataFrame(id_pairs, schema)
-                # print(ids_df.count())
-                #
-                # minhash_ua = F.udf(lambda id: get_minhash_ua(id), ArrayType(StringType()))
-                # minhash_a = F.udf(lambda id: get_minhash_a(id), ArrayType(StringType()))
-                # unanswered_minhash = ids_df.withColumn("unanswered_minhash", minhash_ua(F.col("UnansweredId")))
-                # answered_minhash = unanswered_minhash.withColumn("answered_minhash", minhash_a(F.col("AnsweredId")))
-                #
-                # final_df = answered_minhash.filter(answered_minhash.answered_minhash.isNotNull()).filter(answered_minhash.unanswered_minhash.isNotNull())
-                # print(final_df.count())
-                #
-                # overlap_udf = F.udf(overlap)
-                #
-                # overlap_df = final_df.withColumn("overlap", overlap_udf("unanswered_minhash", "answered_minhash"))
-                # overlap_df = overlap_df.filter(overlap_df.overlap.isNotNull())
-                # print(overlap_df.count())
                 print(category)
-                # overlap_df.show()
-
-                # def write_minhash_data_to_redis(rdd):
-                #     id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
-                #     for row in rdd:
-                #         rdb.sadd('id:{}'.format(row.UnansweredId), row.AnsweredId)
-
-
 
                 for ids in id_pairs:
                     minhash1 = unanswered_redis.smembers('id:{}'.format(ids[0]))
@@ -128,23 +81,6 @@ def compare_text(overlap_threshold=0.9):
                                 # print("overlap_threshold")
                                 id_map_redis.sadd('id:{}'.format(ids[0]), "{0}_{1}".format(ids[1], overlap))
     dist_categories.foreachPartition(calculate_overhead_for_category)
-    # URL_HEADER = 'https://stackoverflow.com/questions/'
-    # for category in rdb.scan_iter('cat:*'):
-    #     pairs = list(itertools.combinations(eval(list(rdb.smembers(category))[0]), 2))
-    #     print("Evaluating potential for {} pairs in category {}".format(len(pairs), category))
-    #     for pair in pairs:
-    #        minhash1 = rdb.smembers('id:{}'.format(pair[0]))
-    #        minhash2 = rdb.smembers('id:{}'.format(pair[1]))
-    #        if minhash1 and minhash2:
-    #            minhash1 = ast.literal_eval(list(minhash1)[0].decode('utf-8'))
-    #            minhash2 = ast.literal_eval(list(minhash2)[0].decode('utf-8'))
-    #            overlap = 1.0 * len(set(minhash1).intersection(set(minhash2)))/len(minhash1)
-    #            if overlap > overlap_threshold:
-    #                url1 = URL_HEADER + pair[0]
-    #                url2 = URL_HEADER + pair[1]
-                   #print(category, url1, url2, overlap)
-                   # cursor.execute('''INSERT INTO scores (id1, id2, score, category) VALUES (%s, %s, %s, %s)''', (url1, url2, overlap, str(category)))
-                   # connection.commit()
 
 def main():
     spark_conf = SparkConf().setAppName("Spark Custom MinHashLSH").set("spark.cores.max", "30")
@@ -152,19 +88,11 @@ def main():
     global sc
     global sql_context
 
-    # global answered_redis
-    # global unanswered_redis
-    # global id_map_redis
-
     sc = SparkContext(conf=spark_conf)
     sc.setLogLevel("ERROR")
     sql_context = SQLContext(sc)
     # sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/lib/util.py")
     # sc.addFile(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/config/config.py")
-
-    # answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-    # unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-    # id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
 
 
     start_time = time.time()
