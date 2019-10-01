@@ -64,7 +64,7 @@ def compare_text(overlap_threshold=0.9):
 
     #Need to distribute this using spark somehow (maybe spark-redis?)
 
-    for category in unanswered_redis.scan_iter('cat:gridgain*'):
+    for category in unanswered_redis.scan_iter('cat:*'):
         answered_members = answered_redis.smembers(category)
         if answered_members:
             answered_ids = eval(list(answered_members)[0])
