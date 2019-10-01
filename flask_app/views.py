@@ -2,11 +2,11 @@ from flask import render_template, request
 from flask_app import app
 # from sqlalchemy import create_engine
 # from sqlalchemy_utils import database_exists, create_database
-import pandas as pd
+# import pandas as pd
 # import psycopg2
 import requests
 import redis
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 
 # user = 'postgres' #add your username here (same as previous postgreSQL)
 # host = db_config.host
