@@ -63,8 +63,12 @@ def compare_text(overlap_threshold=0.9):
     # For each category, go through each unanswered post and output the answered ones with a high enough minhash overlap to redis
 
     #Need to distribute this using spark somehow (maybe spark-redis?)
-
+    categories = []
     for category in unanswered_redis.scan_iter('cat:*'):
+        categories.append(category)
+    dist_categories = sc.parallelize(categories)
+
+    def calculate_overhead_for_category(category):
         answered_members = answered_redis.smembers(category)
         if answered_members:
             answered_ids = eval(list(answered_members)[0])
@@ -119,7 +123,7 @@ def compare_text(overlap_threshold=0.9):
                             print(overlap)
                             # print("overlap_threshold")
                             id_map_redis.sadd('id:{}'.format(ids[0]), "{0}_{1}".format(ids[1], overlap))
-
+    dist_categories.foreachPartition(calculate_overhead_for_category)
     # URL_HEADER = 'https://stackoverflow.com/questions/'
     # for category in rdb.scan_iter('cat:*'):
     #     pairs = list(itertools.combinations(eval(list(rdb.smembers(category))[0]), 2))
