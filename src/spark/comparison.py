@@ -46,9 +46,6 @@ def compare_text(overlap_threshold=0.9):
     #Need to distribute this using spark somehow (maybe spark-redis?)
     categories = []
     for category in unanswered_redis.scan_iter('cat:*'):
-        answered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=0)
-        unanswered_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=1)
-        id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
         answered_members = answered_redis.smembers(category)
         if answered_members:
             answered_ids = eval(list(answered_members)[0])
