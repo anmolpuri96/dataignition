@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 # dbname = db_config.dbname
 # password = db_config.password
 # con = None
-id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
+id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2, health_check_interval=30)
 # con = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
 
 @app.route('/')
