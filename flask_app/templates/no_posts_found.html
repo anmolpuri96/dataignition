@@ -64,49 +64,9 @@
     <div class="container" style="text-align: center;">
 
       <div class="starter-template">
-        <h1>Identified Similar Answered Questions for Unanswered Question: </h1>
+        <h1>No Posts found for id {{ id }} </h1>
       </div>
 
-
-      <div class="card" style="display: inline-block;">
-        <a href={{ unanswered_question['url']  }} target="_blank">
-          <div class="card-header">
-            {{ unanswered_question['title'] }}
-          </div>
-        </a>
-        <div class="card-body">
-          <blockquote class="blockquote mb-0">
-            <p>{{ unanswered_question['body'] }}</p>
-            <!-- <footer class="blockquote-footer">Someone famous in <cite title="Source Title">Source Title</cite></footer> -->
-          </blockquote>
-        </div>
-      </div>
-
-      <br>
-      <br>
-
-      <table class="table table-hover">
-	      <tr><th>Answered Post (Click the title to open on StackOverflow)</th><th>Similarity Score</th>
-	      {% for result in scores %}
-	      <tr>
-		      <td><a href={{ result['url']  }} target="_blank">
-            <div class="card" align="center">
-              <div class="card-header">
-                {{ result['title'] }}
-              </div>
-              </a>
-              <div class="card-body">
-                <blockquote class="blockquote mb-0">
-                  <p>{{ result['body'] }}</p>
-                  <!-- <footer class="blockquote-footer">Someone famous in <cite title="Source Title">Source Title</cite></footer> -->
-                </blockquote>
-              </div>
-            </div>
-          </td>
-		      <td>{{ result['score'] }}</td>
-	      </tr>
-	      {% endfor %}
-      </table>
     <script src="https://code.jquery.com/1.10.2.min.js"></script>
     <script src="static/js/bootstrap.min.js"></script>
     <script>
