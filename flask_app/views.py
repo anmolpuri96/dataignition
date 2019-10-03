@@ -36,10 +36,11 @@ def index():
 
     id = request.args.get('id')
     if not id:
-        for id in id_map_redis.scan_iter('id:*'):
-            id = id
-            id = id.decode('UTF-8')
-            break
+        # for id in id_map_redis.scan_iter('id:*'):
+        #     id = id
+        #     id = id.decode('UTF-8')
+        #     break
+        return render_template('intial_home.html', id=id)
     if "stackoverflow.com" in id:
         split_url = id.split("/")
         questions_idx = split_url.index("questions")
