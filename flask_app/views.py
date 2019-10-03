@@ -48,7 +48,10 @@ def index():
     limit = request.args.get('limit')
     if not limit:
         limit = 5
-    limit = int(limit)
+    try:
+        limit = int(limit)
+    except:
+        return render_template('no_posts_found.html', id=id)
 
     scores = []
     unanswered_question = {}
