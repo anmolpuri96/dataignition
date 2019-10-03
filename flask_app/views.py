@@ -51,7 +51,7 @@ def index():
     try:
         limit = int(limit)
     except:
-        message = "Please use a number to set the limit"
+        message = "Invalid input {} for limit".format(limit)
         return render_template('no_posts_found.html', message=message)
 
     scores = []
