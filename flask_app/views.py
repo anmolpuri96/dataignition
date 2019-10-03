@@ -51,7 +51,7 @@ def index():
     try:
         limit = int(limit)
     except:
-        message = "Invalid input {} for limit".format(limit)
+        message = '''Invalid input "{}" for limit'''.format(limit)
         return render_template('no_posts_found.html', message=message)
 
     scores = []
@@ -59,7 +59,7 @@ def index():
     id = id.split(":")[-1]
     linked_ids = id_map_redis.smembers('id:{}'.format(id))
     if not linked_ids:
-        message = "No match found for id {}".format(id)
+        message = '''No match found for id "{}"'''.format(id)
         return render_template('no_posts_found.html', message=message)
     unanswered_question['id'] = id
     unanswered_question['url'] = "https://stackoverflow.com/questions/{}".format(id)
