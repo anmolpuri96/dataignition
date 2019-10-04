@@ -48,7 +48,7 @@ def index():
         id = split_url[questions_idx+1]
     limit = request.args.get('limit')
     if not limit:
-        limit = 5
+        limit = 3
     try:
         limit = int(limit)
     except:
