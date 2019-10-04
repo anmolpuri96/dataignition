@@ -36,7 +36,7 @@ def index():
 
     id = request.args.get('id')
     if not id:
-        id=1862511
+        id="1862511"
         # for id in id_map_redis.scan_iter('id:*'):
         #     id = id
         #     id = id.decode('UTF-8')
