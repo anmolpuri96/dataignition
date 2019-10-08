@@ -42,7 +42,8 @@ def index():
             id = id
             id = id.decode('UTF-8')
             score_dict = {}
-            score_dict['url'] = "dataignition.tech?id=/{}".format(id)
+            id = id.split(":")[-1]
+            score_dict['url'] = "dataignition.tech?id={}".format(id)
             score_dict['id'] = id
             scores.append(score_dict)
             if count == 4:
