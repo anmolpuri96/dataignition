@@ -45,7 +45,7 @@ def index():
             score_dict['url'] = "dataignition.tech?id=/{}".format(id)
             score_dict['id'] = id
             scores.append(score_dict)
-            if count == 4
+            if count == 4:
                 break
             count += 1
         for score in scores:
