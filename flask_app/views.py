@@ -36,12 +36,22 @@ def index():
 
     id = request.args.get('id')
     if not id:
-        id="1862511"
-        # for id in id_map_redis.scan_iter('id:*'):
-        #     id = id
-        #     id = id.decode('UTF-8')
-        #     break
-        # return render_template('intial_home.html', id=id)
+        scores = []
+        count = 0
+        for id in id_map_redis.scan_iter('id:*'):
+            id = id
+            id = id.decode('UTF-8')
+            score_dict = {}
+            score_dict['url'] = "dataignition.tech?id=/{}".format(id)
+            score_dict['id'] = id
+            scores.append(score_dict)
+            if count == 4
+                break
+            count += 1
+        for score in scores:
+            page = requests.get(score['url'])
+            add_html_body(page, score)
+        return render_template('intial_home.html', scores=scores)
     if "stackoverflow.com" in id:
         split_url = id.split("/")
         questions_idx = split_url.index("questions")

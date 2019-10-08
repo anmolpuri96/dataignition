@@ -21,6 +21,8 @@
     <!-- Custom styles for this template -->
     <link href="starter-template.css" rel="stylesheet">
 
+    <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/glacial-indifference" type="text/css"/>
+
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
@@ -61,12 +63,33 @@
   </div>
 </nav>
     <hr>
-    <div class="container" style="text-align: center;">
+    <div class="container" style="text-align: center;font-family: 'GlacialIndifferenceRegular';">
 
       <div class="starter-template">
-        <h1> Use the search bar above to search for an unanswered question </h1>
+        <h1>Unanswered Questions: </h1>
       </div>
 
+      <table class="table table-hover">
+	      <tr><th style="font-size: 1.5rem;">Unanswered Posts</th>
+	      {% for result in scores %}
+	      <tr>
+		      <td><a href={{ result['url']  }} target="_blank">
+            <div class="card" align="center" style="color: black;text-decoration: none;">
+              <div class="card-header" style="font-size: 1.5rem;">
+                {{ result['title'] }}
+              </div>
+              <div class="card-body">
+                <blockquote class="blockquote mb-0">
+                  <p>{{ result['body'] }}</p>
+                  <!-- <footer class="blockquote-footer">Someone famous in <cite title="Source Title">Source Title</cite></footer> -->
+                </blockquote>
+              </div>
+            </div>
+            </a>
+          </td>
+	      </tr>
+	      {% endfor %}
+      </table>
     <script src="https://code.jquery.com/1.10.2.min.js"></script>
     <script src="static/js/bootstrap.min.js"></script>
     <script>
