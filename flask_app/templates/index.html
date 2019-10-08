@@ -70,18 +70,18 @@
       </div>
 
 
-      <div class="card" style="display: inline-block;">
+      <div class="card" style="display: inline-block;color: black;text-decoration: none;">
         <a href={{ unanswered_question['url']  }} target="_blank">
           <div class="card-header">
             {{ unanswered_question['title'] }}
           </div>
+          <div class="card-body">
+            <blockquote class="blockquote mb-0">
+              <p>{{ unanswered_question['body'] }}</p>
+              <!-- <footer class="blockquote-footer">Someone famous in <cite title="Source Title">Source Title</cite></footer> -->
+            </blockquote>
+          </div>
         </a>
-        <div class="card-body">
-          <blockquote class="blockquote mb-0">
-            <p>{{ unanswered_question['body'] }}</p>
-            <!-- <footer class="blockquote-footer">Someone famous in <cite title="Source Title">Source Title</cite></footer> -->
-          </blockquote>
-        </div>
       </div>
 
       <br>
@@ -93,7 +93,7 @@
 	      <tr>
 		      <td><a href={{ result['url']  }} target="_blank">
             <div class="card" align="center" style="color: black;text-decoration: none;">
-              <div class="card-header">
+              <div class="card-header" style="font-size: 12;">
                 {{ result['title'] }}
               </div>
               <div class="card-body">
