@@ -49,7 +49,7 @@ def index():
     if not id:
         scores = []
         count = 0
-        ids = ["3131957", "2274158", "3525311"]
+        ids = ["2274158", "3525311", "3131957"]
         for id in ids:
             # id = id
             # id = id.decode('UTF-8')
