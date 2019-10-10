@@ -17,6 +17,13 @@ from bs4 import BeautifulSoup
 id_map_redis = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2, health_check_interval=30)
 # con = redis.StrictRedis(host="ec2-52-73-233-196.compute-1.amazonaws.com", port=6379, db=2)
 
+@app.before_request
+def before_request():
+    if request.url.startswith('http://'):
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -38,6 +45,7 @@ def index():
     if not id:
         scores = []
         count = 0
+        # ids = ["3131957", "2274158", "", "", ""]
         for id in id_map_redis.scan_iter('id:*'):
             id = id
             id = id.decode('UTF-8')
