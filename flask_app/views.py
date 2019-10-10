@@ -49,12 +49,12 @@ def index():
     if not id:
         scores = []
         count = 0
-        # ids = ["3131957", "2274158", "", "", ""]
-        for id in id_map_redis.scan_iter('id:*'):
-            id = id
-            id = id.decode('UTF-8')
+        ids = ["3131957", "2274158", "3525311"]
+        for id in ids:
+            # id = id
+            # id = id.decode('UTF-8')
             score_dict = {}
-            id = id.split(":")[-1]
+            # id = id.split(":")[-1]
             score_dict['url'] = "https://stackoverflow.com/questions/{}".format(id)
             score_dict['url2'] = "http://dataignition.tech?id={}".format(id)
             score_dict['id'] = id
